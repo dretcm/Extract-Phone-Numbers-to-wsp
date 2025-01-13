@@ -7,13 +7,19 @@ import time
 import csv
 import os
 import re
+import pandas as pd
 
-clean_number = lambda num: re.sub(r"\s+", "", num)
+#clean_number = lambda num: re.sub(r"\s+", "", num)
 
-def cargar_numeros(csv_file):
-    with open(csv_file, "r", encoding="utf-8") as file:
-        reader = csv.reader(file)
-        return [row[0].strip() for row in reader]
+# def cargar_numeros(csv_file):
+#     with open(csv_file, "r", encoding="utf-8") as file:
+#         reader = csv.reader(file)
+#         return [row[0].strip() for row in reader]
+    
+def load_numbers_per_group(file):
+    df = pd.read_csv(file)
+    column= input("\nEnter group: ")
+    return [num for num in df["Group "+column] if pd.notna(num)]
 
 def iniciar_whatsapp(persistencia_dir="whatsapp_session"):
     if not os.path.exists(persistencia_dir):
@@ -51,7 +57,8 @@ def agregar_al_grupo(driver, numeros):
 
 if __name__ == "__main__":
     archivo_csv = "ONE_Column_Numbers.csv"
-    numeros = cargar_numeros(archivo_csv)
+    #numeros = cargar_numeros(archivo_csv)
+    numeros = load_numbers_per_group("split_groups.csv")
     driver = iniciar_whatsapp()
     try:
         agregar_al_grupo(driver, numeros)
